@@ -1,0 +1,7 @@
+rule "Map Transactions By Credit Card Number"
+ruleflow-group "mapper-rules"
+when
+	mapper : com.rhc.hadoop.model.TransactionMapper(transaction : transaction)
+then
+	mapper.setKey(transaction.getCreditCard());
+end

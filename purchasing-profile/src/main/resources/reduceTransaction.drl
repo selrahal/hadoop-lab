@@ -1,0 +1,8 @@
+rule "Reduce Transactions By Credit Card Number"
+ruleflow-group "reducer-rules"
+when
+	reducer : com.rhc.hadoop.model.TransactionCreditCardReducer()
+	transaction : com.rhc.hadoop.model.Transaction()
+then
+	reducer.add(transaction.getAmount());
+end

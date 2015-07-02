@@ -165,7 +165,10 @@ DUMP B;
 8.) Execute the query and examine the results
 
 
-## Use MapReduce job to create Purchasing Profile ##
+## Use MapReduce job to Calculate Total##
+hadoop jar map-reduce-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output3
 
+## Integrate Drools with MapReduce ##
+hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools2
 
 
