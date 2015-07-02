@@ -166,9 +166,58 @@ DUMP B;
 
 
 ## Use MapReduce job to Calculate Total##
-hadoop jar map-reduce-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output3
+1.) Import the State Total project (state-total/) into your IDE of choice
+2.) Inspect the Mapper class, `StateTotalMapper`
+  * Look at the class header, why are we using those generics?
+  * How are the transactions mapped together?
+3.) Inspect the Reducer class, `StateTotalReducer`
+  * Look at the class header, why are we using those generics?
+  * What is the class reducing on and to what end?
+4.) Inspect the job configuration class `StateTotalJob`
+  * How are the Mapper/Reducer classes specified?
+5.) Inspect the pom.xml
+  * How are we ensuring there will be no ClassNotFound exceptions when we run our Java code in the hadoop cluster?
+6.) Build the project
+
+```shell
+mvn clean install
+```
+
+7.) Upload the jar to the sandbox 
+
+```shell
+scp -P 2222 target/state-total-1.0.0-SNAPSHOT.jar root@localhost:
+```
+
+8.) Log into the sandbox and run the MapReduce job
+ssh -p 2222 root@localhost 'hadoop jar state-total-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output'
 
 ## Integrate Drools with MapReduce ##
-hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools2
+1.) Import the Purchasing Profile project (purchasing-profile/) into your IDE of choice
+2.) Inspect the Mapper class, `DroolsMapper`
+  * Look at the class header, why are we using those generics?
+  * How are the transactions mapped together?
+3.) Inspect the Reducer class, `DroolsReducer`
+  * Look at the class header, why are we using those generics?
+  * What is the class reducing on and to what end?
+4.) Inspect the job configuration class `StateTotalJob`
+  * How are the Mapper/Reducer classes specified?
+5.) Inspect the rules used to perform the map and reduce (`mapTransaction.drl` and `reduceTransaction.drl` respectively)
+6.) Inspect the pom.xml
+  * How are we ensuring there will be no ClassNotFound exceptions when we run our Java code in the hadoop cluster?
+7.) Build the project
+
+```shell
+mvn clean install
+```
+
+7.) Upload the jar to the sandbox
+
+```shell
+scp -P 2222 target/purchasing-profile-1.0.0-SNAPSHOT.jar root@localhost:
+```
+
+8.) Log into the sandbox and run the MapReduce job
+ssh -p 2222 root@localhost 'hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools'
 
 
