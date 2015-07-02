@@ -151,5 +151,3 @@ scp -P 2222 target/purchasing-profile-1.0.0-SNAPSHOT.jar root@localhost:
 
 8.) Log into the sandbox and run the MapReduce job
 ssh -p 2222 root@localhost 'hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools'
-
-
