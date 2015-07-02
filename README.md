@@ -1,88 +1,20 @@
-Hadoop Tech Talk (8/21/2015)
+Hadoop Lab
 ================
+In this lab we will create a purchasing profile for our credit card customers. This will allow us to use historical data in judging the confidence value of a credit card transaction on the fly. First we will upload our data to the Hadoop cluster and perform some basic queries. Then we will create a MapReduce job to calculate spending by state. Finally we will integrate Drools with our MapReduce job to provide flexibilty in our mapping and reducing logic.
 
-[Hortonworks Sandbox For VirtualBox](http://hortonworks.com/products/hortonworks-sandbox/#install)
-
-
-What is big data?
-* Variety, Volume, Velocity
-* structured vs unstructred data
-
-What is hadoop? Platform for analyzing/processing/storing data.
-Show picture of components
-explain that everything is built on hdfs, yarn, and mapreduce
-
-MapReduce overview
-* Two basic phases
- * Map phase
- * Reduce phase
-
-Hadoop distributed file system (HDFS) overview
-* many data nodes in the cluster
-* files get split up and replicated
-
-Yet another resource manager (YARN) overview
-* orchestrates tasks in hadoop
-
-That's core hadoop!!
-
-different projects: hive, pig, hdfs, yarn, ambari, sqoop, flume, spark, oozie
-
-How to get data into/outof Hadoop?
-webhdfs, sqoop, flume
-
-How to analyze data in hadoop?
-pig, hive, spark
-
-solr
-* search
-
-storm
-* stream processing
-
-hbase
-* nosql db
-
-hcatalog
-* stores table metadata for pig/hive
-
-zookeeper
-* cluster config
-
-operations
-* ambari
-
-
-Lab time!
-
-boot up sandbox
-overview of cluster architecture
-confirm cluster is started
-load sample data (yelp, nyse, something cool....)
-git clone java implemented map reduce job (skeleton?)
-build map reduce job, implement it 
-
-load data into hadoop using cli and webfs
-create table, query it with hive
-create table, transform it with pig
-
-cover monitoring with ambari
-
-
-
-## LAB ##
-In this lab we will create a purchasing profile for our credit card customers. This will allow us to use historical data in judging the confidence value of a credit card transaction on the fly. First we will upload our data to the Hadoop cluster and perform some basic queries. Then we will create a MapReduce job using Drools to define our purchasing profile.
+## Prerequisitse ##
+1.) Download [VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads)
+2.) Download [Hortonworks Sandbox For VirtualBox](http://hortonworks.com/products/hortonworks-sandbox/#install)
 
 ## Start the Hadoop Cluster ##
-1.) Install [VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads)
+1.) Install VirtualBox 
   * You might need to run `/etc/init.d/vboxdrv setup'
     * You will need to make sure gcc is installed with `sudo yum install gcc`
     * You will need to make sure your kernel source/headers are installed with `sudo yum install kernel-devel kernel-headers`
-2.) Download [Hortonworks 2.3 Sandbox For VirtualBox](http://hortonworks.com/products/hortonworks-sandbox/#install)
-3.) Import Hortworks appliance into VirtualBox, default values are fine
-4.) Start Hortonworks VM
-5.) Navigate to http://localhost:8000 to view Hue (Web interface for Hadoop)
-6.) SSH into the vm on port 2222 with user:`root` and pass:`hadoop`
+2.) Import Hortworks appliance into VirtualBox, default values are fine
+3.) Start Hortonworks VM
+4.) Navigate to http://localhost:8000 to view Hue (Web interface for Hadoop)
+5.) SSH into the vm on port 2222 with user:`root` and pass:`hadoop`
 
 ## Upload the data ##
 1.) Inspect the transactions.csv file to discover the format
