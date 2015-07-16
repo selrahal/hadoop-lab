@@ -16,8 +16,16 @@ In this lab we will create a purchasing profile for our credit card customers. T
 4. Navigate to http://localhost:8000 to view Hue (Web interface for Hadoop)
 5. SSH into the vm on port 2222 with user:`root` and pass:`hadoop`
 
+    ```shell
+    [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222
+    ```
+
 ## Upload the data ##
 1. Inspect the transactions.csv file to discover the format
+
+    ```shell
+    [selrahal@localhost hadoop-lab]$ cat data/transactions.csv
+    ```
 2. In Hue, navigate to the file manager
 3. Upload data/transactions.csv file
 
@@ -29,30 +37,68 @@ In this lab we will create a purchasing profile for our credit card customers. T
 3. After it is done, browse the data in the table
 
 ## Stream some data with Flume ##
-1. SSH into the sandbox and install flume with `yum install flume`
+1. Install flume in the sanbox 
+
+    ```shell
+    [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222 'yum install flume'
+    ```
+
 2. Inspect the flume.conf file in stream/ folder
-3. SCP the flume file into the sandbox under the folder /etc/flume/conf
 
     ```shell
-    scp -P 2222 stream/flume.conf root@localhost:/etc/flume/conf
+    [selrahal@localhost hadoop-lab]$ cat stream/flume.conf
     ```
 
-4. Start flume
+  * Take note of the command for the `eventlogs` source:
+
+    ```properties
+    sandbox.sources.eventlog.command = tail -F /var/log/transactions.log
+    ```
+
+  * Take note of the path for the `sink_to_hdfs` sink:
+
+    ```properties
+    sandbox.sinks.sink_to_hdfs.hdfs.path = /flume/transactions
+    ```
+
+3. SCP the flume conf file into the sandbox under the folder /etc/flume/conf
 
     ```shell
-    flume-ng agent -c /etc/flume/conf -f /etc/flume/conf/flume.conf -n sandbox
+    [selrahal@localhost hadoop-lab]$ scp -P 2222 stream/flume.conf root@localhost:/etc/flume/conf
     ```
+
+4. Start flume in the sandbox
+
+    ```shell
+    [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222 'flume-ng agent -c /etc/flume/conf -f /etc/flume/conf/flume.conf -n sandbox'
+    ```
+5. Inspect the `stream/generate_transactions.py` script
+
+    ```shell
+    [selrahal@localhost hadoop-lab]$ python stream/generate_transactions.py -h
+    Usage: generate_transactions.py [options]
+
+    Options:
+      -h, --help            show this help message and exit
+      -f LOGFILE, --logfile=LOGFILE
+                            Specify a log file. Default=/var/log/transactions.log
+      -n ITERATIONS, --number-of-iterations=ITERATIONS
+                            Specify the number of log events to create.
+                            Default=100
+    ```
+
+  * Take note of the default logfile location!
 
 5. Copy the generate_transactions.py script from stream/ to the sandbox using scp:
 
     ```shell
-    scp -P 2222 stream/generate_transactions.py root@localhost:~
+    [selrahal@localhost hadoop-lab]$ scp -P 2222 stream/generate_transactions.py root@localhost:~
     ```
 
 6. On the sandbox, run the generate_transactions.py script:
 
     ```shell
-    python generate_transactions.py
+    [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222 'python generate_transactions.py'
     ```
 
 7. Use Hive to generate a view for this data
@@ -61,7 +107,9 @@ In this lab we will create a purchasing profile for our credit card customers. T
     CREATE TABLE TRANSACTIONS(CC STRING, city STRING, state STRING, amount DOUBLE) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/flume/transactions';
     ```
 
-8. Use HCatalog to browse the data
+  * Why are we using the `/flue/transactions/` location as the source of our data?
+
+8. Use HCatalog to browse the data using the new view
 
 ## Use Hive to find all expensive transactions ##
 1. Navigate to the Hive query editor
@@ -70,6 +118,10 @@ In this lab we will create a purchasing profile for our credit card customers. T
     ```SQL
     select * from transactions order by amount desc limit 10
     ```
+
+3. Try some other queries out:
+  * Find the cheapest transaction
+  * Find the cheapest transaction for CC `1234432112344321`
 
 ## Use PIG to find all transactions in North Carolina ##
 1. Navigate to the PIG script editor
@@ -112,20 +164,22 @@ In this lab we will create a purchasing profile for our credit card customers. T
 6. Build the project
 
     ```shell
-    mvn clean install
+    [selrahal@localhost state-total]$ mvn clean install
     ```
 
 7. Upload the jar to the sandbox 
 
     ```shell
-    scp -P 2222 target/state-total-1.0.0-SNAPSHOT.jar root@localhost:
+    [selrahal@localhost state-total]$ scp -P 2222 target/state-total-1.0.0-SNAPSHOT.jar root@localhost:
     ```
 
-8. Log into the sandbox and run the MapReduce job
+8. Run the MapReduce job in the sandbox
 
     ```shell
-    ssh -p 2222 root@localhost 'hadoop jar state-total-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output'
+    [selrahal@localhost state-total]$ ssh -p 2222 root@localhost 'hadoop jar state-total-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output'
     ```
+
+9. Use the file browser in hue to inspect the results at /user/hue/output
 
 ## Integrate Drools with MapReduce ##
 1. Import the Purchasing Profile project (purchasing-profile/) into your IDE of choice
@@ -143,17 +197,19 @@ In this lab we will create a purchasing profile for our credit card customers. T
 7. Build the project
 
     ```shell
-    mvn clean install
+    [selrahal@localhost purchasing-profile]$ mvn clean install
     ```
 
 8. Upload the jar to the sandbox
 
     ```shell
-    scp -P 2222 target/purchasing-profile-1.0.0-SNAPSHOT.jar root@localhost:
+    [selrahal@localhost purchasing-profile]$ scp -P 2222 target/purchasing-profile-1.0.0-SNAPSHOT.jar root@localhost:
     ```
 
-9. Log into the sandbox and run the MapReduce job
+9. Run the MapReduce job in the sandbox
 
     ```shell
-    ssh -p 2222 root@localhost 'hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools'
+    [selrahal@localhost purchasing-profile]$ ssh -p 2222 root@localhost 'hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools'
     ```
+
+9. Use the file browser in hue to inspect the results at /user/hue/drools
