@@ -33,33 +33,33 @@ In this lab we will create a purchasing profile for our credit card customers. T
 2. Inspect the flume.conf file in stream/ folder
 3. SCP the flume file into the sandbox under the folder /etc/flume/conf
 
-```shell
-scp -P 2222 stream/flume.conf root@localhost:/etc/flume/conf
-```
+    ```shell
+    scp -P 2222 stream/flume.conf root@localhost:/etc/flume/conf
+    ```
 
 4. Start flume
 
-```shell
-flume-ng agent -c /etc/flume/conf -f /etc/flume/conf/flume.conf -n sandbox
-```
+    ```shell
+    flume-ng agent -c /etc/flume/conf -f /etc/flume/conf/flume.conf -n sandbox
+    ```
 
 5. Copy the generate_transactions.py script from stream/ to the sandbox using scp:
 
-```shell
-scp -P 2222 stream/generate_transactions.py root@localhost:~
-```
+    ```shell
+    scp -P 2222 stream/generate_transactions.py root@localhost:~
+    ```
 
 6. On the sandbox, run the generate_transactions.py script:
 
-```shell
-python generate_transactions.py
-```
+    ```shell
+    python generate_transactions.py
+    ```
 
 7. Use Hive to generate a view for this data
 
-```SQL
-CREATE TABLE TRANSACTIONS(CC STRING, city STRING, state STRING, amount DOUBLE) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/flume/transactions';
-```
+    ```SQL
+    CREATE TABLE TRANSACTIONS(CC STRING, city STRING, state STRING, amount DOUBLE) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/flume/transactions';
+    ```
 
 8. Use HCatalog to browse the data
 
@@ -67,31 +67,31 @@ CREATE TABLE TRANSACTIONS(CC STRING, city STRING, state STRING, amount DOUBLE) R
 1. Navigate to the Hive query editor
 2. Run the following HQL
 
-```SQL
-select * from transactions order by amount desc limit 10
-```
+    ```SQL
+    select * from transactions order by amount desc limit 10
+    ```
 
 ## Use PIG to find all transactions in North Carolina ##
 1. Navigate to the PIG script editor
 2. Title the script 'NC Transactions'
 3. Using the PIG helper load the data from the transactions table
 
-```
-A = LOAD 'default.transactions' USING org.apache.hive.hcatalog.pig.HCatLoader();
-```
+    ```
+    A = LOAD 'default.transactions' USING org.apache.hive.hcatalog.pig.HCatLoader();
+    ```
 
 4. Add the `-useHCatalog` parameter at the bottom of your screen
 5. Filter the data by checking the state field (its index is 2)
 
-```
-B = FILTER A BY $2 == 'NC' ;
-```
+    ```
+    B = FILTER A BY $2 == 'NC' ;
+    ```
 
 6.  Output the result as the last step
 
-```
-DUMP B;
-```
+    ```
+    DUMP B;
+    ```
 
 7. Perform a syntax check (note that even the syntax check is done as a map reduce job!)
 8. Execute the query and examine the results
@@ -111,18 +111,21 @@ DUMP B;
   * How are we ensuring there will be no ClassNotFound exceptions when we run our Java code in the hadoop cluster?
 6. Build the project
 
-```shell
-mvn clean install
-```
+    ```shell
+    mvn clean install
+    ```
 
 7. Upload the jar to the sandbox 
 
-```shell
-scp -P 2222 target/state-total-1.0.0-SNAPSHOT.jar root@localhost:
-```
+    ```shell
+    scp -P 2222 target/state-total-1.0.0-SNAPSHOT.jar root@localhost:
+    ```
 
 8. Log into the sandbox and run the MapReduce job
-ssh -p 2222 root@localhost 'hadoop jar state-total-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output'
+
+    ```shell
+    ssh -p 2222 root@localhost 'hadoop jar state-total-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output'
+    ```
 
 ## Integrate Drools with MapReduce ##
 1. Import the Purchasing Profile project (purchasing-profile/) into your IDE of choice
@@ -139,15 +142,18 @@ ssh -p 2222 root@localhost 'hadoop jar state-total-1.0.0-SNAPSHOT.jar /flume/tra
   * How are we ensuring there will be no ClassNotFound exceptions when we run our Java code in the hadoop cluster?
 7. Build the project
 
-```shell
-mvn clean install
-```
+    ```shell
+    mvn clean install
+    ```
 
 8. Upload the jar to the sandbox
 
-```shell
-scp -P 2222 target/purchasing-profile-1.0.0-SNAPSHOT.jar root@localhost:
-```
+    ```shell
+    scp -P 2222 target/purchasing-profile-1.0.0-SNAPSHOT.jar root@localhost:
+    ```
 
 9. Log into the sandbox and run the MapReduce job
-ssh -p 2222 root@localhost 'hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools'
+
+    ```shell
+    ssh -p 2222 root@localhost 'hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools'
+    ```
