@@ -26,21 +26,24 @@ In this lab we will create a purchasing profile for our credit card customers. T
     ```shell
     [selrahal@localhost hadoop-lab]$ cat data/transactions.csv
     ```
-2. In Hue, navigate to the file manager
-3. Upload data/transactions.csv file
+2. In Hue, navigate to the file browser 
+3. Upload data/transactions.csv file to hue's home directory
 
 ## Create a view for this data ##
 1. In Hue, navigate to HCatalog
 2. Select `Create a new table from a file`
   * Table Name: simple_transactions
-  * Default values for columns is fine
-3. After it is done, browse the data in the table
+  * Description: Simple Transactions
+  * Input File : /user/hue/transactions.csv
+  * Are the default values for columns ok? What are they?
+  * Click `Create table`
+3. After it is done, browse the data in the table by clicking `Browse Data`
 
 ## Stream some data with Flume ##
 1. Install flume in the sanbox 
 
     ```shell
-    [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222 'yum install flume'
+    [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222 'yum install -y flume'
     ```
 
 2. Inspect the flume.conf file in stream/ folder
@@ -70,7 +73,7 @@ In this lab we will create a purchasing profile for our credit card customers. T
 4. Start flume in the sandbox
 
     ```shell
-    [root@sandbox ~]# flume-ng agent -c /etc/flume/conf -f /etc/flume/conf/flume.conf -n sandbox
+    [root@sandbox ~]# flume-ng agent -c /etc/flume/conf -f /etc/flume/conf/flume.conf -n sandbox &
     ```
 5. Inspect the `stream/generate_transactions.py` script
 
@@ -103,11 +106,15 @@ In this lab we will create a purchasing profile for our credit card customers. T
 
 7. Use Hive to generate a view for this data
 
+  * Navigate to Beeswax (Hive UI) and enter the following
+
     ```SQL
     CREATE TABLE TRANSACTIONS(CC STRING, city STRING, state STRING, amount DOUBLE) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/flume/transactions';
     ```
 
   * Why are we using the `/flue/transactions/` location as the source of our data?
+
+  * Explain the query using hive.
 
 8. Use HCatalog to browse the data using the new view
 
@@ -176,10 +183,12 @@ In this lab we will create a purchasing profile for our credit card customers. T
 8. Run the MapReduce job in the sandbox
 
     ```shell
-    [selrahal@localhost state-total]$ ssh -p 2222 root@localhost 'hadoop jar state-total-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output'
+    [selrahal@localhost state-total]$ ssh -p 2222 root@localhost 'yarn jar state-total-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/output'
     ```
 
-9. Use the file browser in hue to inspect the results at /user/hue/output
+9. The output will give you a url to track the job, check out its progress in real time!
+
+10. When it is done, use the file browser in hue to inspect the results at /user/hue/output
 
 ## Integrate Drools with MapReduce ##
 1. Import the Purchasing Profile project (purchasing-profile/) into your IDE of choice
@@ -209,7 +218,9 @@ In this lab we will create a purchasing profile for our credit card customers. T
 9. Run the MapReduce job in the sandbox
 
     ```shell
-    [selrahal@localhost purchasing-profile]$ ssh -p 2222 root@localhost 'hadoop jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools'
+    [selrahal@localhost purchasing-profile]$ ssh -p 2222 root@localhost 'yarn jar purchasing-profile-1.0.0-SNAPSHOT.jar /flume/transactions /user/hue/drools'
     ```
 
-9. Use the file browser in hue to inspect the results at /user/hue/drools
+9. The output will give you a url to track the job, check out its progress in real time!
+
+10. When it is done, use the file browser in hue to inspect the results at /user/hue/drools
