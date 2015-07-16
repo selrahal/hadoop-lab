@@ -14,7 +14,7 @@ In this lab we will create a purchasing profile for our credit card customers. T
 2. Import Hortworks appliance into VirtualBox, default values are fine
 3. Start Hortonworks VM
 4. Navigate to http://localhost:8000 to view Hue (Web interface for Hadoop)
-5. SSH into the vm on port 2222 with user:`root` and pass:`hadoop`
+5. Verify that you can SSH into the vm on port 2222 with user:`root` and pass:`hadoop`
 
     ```shell
     [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222
@@ -70,7 +70,7 @@ In this lab we will create a purchasing profile for our credit card customers. T
 4. Start flume in the sandbox
 
     ```shell
-    [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222 'flume-ng agent -c /etc/flume/conf -f /etc/flume/conf/flume.conf -n sandbox'
+    [root@sandbox ~]# flume-ng agent -c /etc/flume/conf -f /etc/flume/conf/flume.conf -n sandbox
     ```
 5. Inspect the `stream/generate_transactions.py` script
 
@@ -98,7 +98,7 @@ In this lab we will create a purchasing profile for our credit card customers. T
 6. On the sandbox, run the generate_transactions.py script:
 
     ```shell
-    [selrahal@localhost hadoop-lab]$ ssh root@localhost -p 2222 'python generate_transactions.py'
+    [root@hadoop ~]# python generate_transactions.py
     ```
 
 7. Use Hive to generate a view for this data
