@@ -8,9 +8,9 @@ In this lab we will create a purchasing profile for our credit card customers. T
 
 ## Start the Hadoop Cluster ##
 1. Install VirtualBox 
-* You might need to run `/etc/init.d/vboxdrv setup'
-  * You will need to make sure gcc is installed with `sudo yum install gcc`
-  * You will need to make sure your kernel source/headers are installed with `sudo yum install kernel-devel kernel-headers`
+  * You might need to run `/etc/init.d/vboxdrv setup'
+    * You will need to make sure gcc is installed with `sudo yum install gcc`
+    * You will need to make sure your kernel source/headers are installed with `sudo yum install kernel-devel kernel-headers`
 2. Import Hortworks appliance into VirtualBox, default values are fine
 3. Start Hortonworks VM
 4. Navigate to http://localhost:8000 to view Hue (Web interface for Hadoop)
