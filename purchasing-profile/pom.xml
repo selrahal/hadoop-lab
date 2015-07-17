@@ -13,6 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<hadoop.version>2.7.0</hadoop.version>
 		<shade.version>2.4</shade.version>
+		<jar.plugin.version>2.4</jar.plugin.version>
 		<drools.version>6.2.0.Final</drools.version>
 		<junit.version>4.11</junit.version>
 	</properties>
@@ -86,6 +87,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>${jar.plugin.version}</version>
 				<configuration>
 					<archive>
 						<manifest>
