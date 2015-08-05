@@ -6,26 +6,25 @@ import org.junit.Test;
 import org.kie.api.runtime.KieSession;
 
 import com.rhc.hadoop.drools.DroolsHelper;
-import com.rhc.hadoop.drools.map.ReducerFact;
-import com.rhc.hadoop.model.Transaction;
-import com.rhc.hadoop.model.TransactionCreditCardReducer;
+import com.rhc.hadoop.drools.entry.Entry;
+import com.rhc.hadoop.drools.entry.RunningReduce;
 
 public class TestReducerRules {
 
 	@Test
 	public void testSimpleMapping() {
-		ReducerFact reducee = new TransactionCreditCardReducer("1234");
-		String[] values = {"1234,Durham,NC,20.0","1234,Portland,OR,40.0"};
+		Entry one = new Entry("1234", "20.0");
+		Entry two = new Entry("1234", "40.0");
+		
+		RunningReduce reducee = new RunningReduce(one.key, one.value);
     	
-    	for (String value : values) {
     		KieSession kieSession = DroolsHelper.createKieSession();
             kieSession.insert(reducee);
-            kieSession.insert(new Transaction(value.toString()));
+            kieSession.insert(two);
             kieSession.getAgenda().getAgendaGroup("reducer-rules").setFocus();
             kieSession.fireAllRules();
             kieSession.dispose();
-    	}
 
-		Assert.assertEquals("60.0", reducee.getValue());
+		Assert.assertEquals("60.0", reducee.value);
 	}
 }

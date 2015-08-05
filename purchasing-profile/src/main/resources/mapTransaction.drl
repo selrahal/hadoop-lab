@@ -1,7 +1,20 @@
+import com.rhc.hadoop.model.Transaction;
+import com.rhc.hadoop.drools.entry.Entry;
+
+global com.rhc.hadoop.drools.entry.Collector collector;
+
 rule "Map Transactions By Credit Card Number"
 ruleflow-group "mapper-rules"
 when
-	mapper : com.rhc.hadoop.model.TransactionMapper(transaction : transaction)
+	transaction : Transaction(cc: creditCard, amount : amount)
 then
-	mapper.setKey(transaction.getCreditCard());
+	collector.collect(cc, "" + amount);
+end
+
+rule "Create Transactions"
+ruleflow-group "mapper-rules"
+when
+	$entry : Entry()
+then
+	insert(new Transaction($entry.value));
 end

@@ -1,8 +1,11 @@
-rule "Reduce Transactions By Credit Card Number"
+import com.rhc.hadoop.drools.entry.Entry;
+import com.rhc.hadoop.drools.entry.RunningReduce;
+
+rule "Reduce Transactions By Summation"
 ruleflow-group "reducer-rules"
 when
-	reducer : com.rhc.hadoop.model.TransactionCreditCardReducer()
-	transaction : com.rhc.hadoop.model.Transaction()
+	$runningReduce : RunningReduce()
+	$entry : Entry()
 then
-	reducer.add(transaction.getAmount());
+	$runningReduce.value = "" + (Double.parseDouble($runningReduce.value) + Double.parseDouble($entry.value));
 end

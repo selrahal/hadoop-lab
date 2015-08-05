@@ -1,34 +1,42 @@
 package com.rhc.hadoop;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.kie.api.runtime.KieSession;
 
 import com.rhc.hadoop.drools.DroolsHelper;
-import com.rhc.hadoop.drools.map.ReducerFact;
-import com.rhc.hadoop.model.Transaction;
-import com.rhc.hadoop.model.TransactionCreditCardReducer;
+import com.rhc.hadoop.drools.entry.Entry;
+import com.rhc.hadoop.drools.entry.RunningReduce;
 
 public class DroolsReducer extends Reducer<Text, Text, Text, Text> {
 
     @Override
     public void reduce(Text key, Iterable<Text> values, Context output)
             throws IOException, InterruptedException {
-    	ReducerFact reducee = new TransactionCreditCardReducer(key.toString());
+    	Iterator<Text> iterator = values.iterator();
+    	if (iterator.hasNext()) {
+    		//No values!
+    		return;
+    	}
     	
-    	for (Text value : values) {
+    	Text initialValue = iterator.next();
+    	RunningReduce runningReduce = new RunningReduce(key.toString(), initialValue.toString());
+    	
+    	while (iterator.hasNext()) {
+    		Text nextValue = iterator.next();
     		KieSession kieSession = DroolsHelper.createKieSession();
-            kieSession.insert(reducee);
-            kieSession.insert(new Transaction(value.toString()));
+            kieSession.insert(runningReduce);
+            kieSession.insert(new Entry(key.toString(), nextValue.toString()));
             kieSession.getAgenda().getAgendaGroup("reducer-rules").setFocus();
             kieSession.fireAllRules();
             kieSession.dispose();
     	}
 
-    	Text outKey = new Text(reducee.getKey());
-        Text outValue = new Text(reducee.getValue());
+    	Text outKey = new Text(runningReduce.toString());
+        Text outValue = new Text(runningReduce.toString());
         output.write(outKey , outValue);
     }
 }
